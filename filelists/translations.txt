@@ -1,0 +1,4 @@
+#######
+# The files below will be ignored when scripts are (re)loaded
+
+game/tl/**/*.rpy

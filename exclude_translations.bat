@@ -1,0 +1,1 @@
+python3 .\main.py --exclude "filelists/translations.txt" --projectdir .
