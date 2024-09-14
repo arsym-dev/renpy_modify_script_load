@@ -72,3 +72,6 @@ An exception will be thrown if the game tries to access a variable, function, or
 To get around this, either:
 1) Restore files, remove the line corresponding to the script in from the filelist, then exclude files again; or
 2) Move the definition to a different file that you will not exclude
+
+## Acknowledgements
+Thanks to [MiiNiPaa](https://github.com/MiiNiPaa) for the idea ([Source](https://github.com/renpy/renpy/issues/5777#issuecomment-2348404822))
