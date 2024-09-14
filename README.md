@@ -17,7 +17,7 @@ As part of the [lifecycle of a Ren'Py game](https://www.renpy.org/doc/html/lifec
 To speed up loading, this script will ignore selected `.rpy` script files by changing their extension so the Ren'py engine will not read them. We can also tell the version control software (in this case git) to ignore that the file was renamed using the [--skip-worktree flag in `git update-index`](https://git-scm.com/docs/git-update-index).
 
 ## Usage
-Make sure to add `*.ignore` (or whatever you choose with the `--extesnion` argument) to your `.gitignore` file.
+Make sure to add `*.ignore` (or whatever you choose with the `--extension` argument) to your `.gitignore` file.
 
 ```bash
 python3 main.py [ options... ]
@@ -41,7 +41,7 @@ Provide the path to a file that contains a list of all the scripts to restore
 
 The extension to add to script files to prevent them from being loaded. Defaults to '.ignore'
 
-> --projectdir dir
+> --projectdir \<dir>
 
 The directory of the game project. Git commands are run here, and script paths are relative to this directory.
 
