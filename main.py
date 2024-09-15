@@ -23,12 +23,12 @@ def get_filenames(paths: list[str], append_extension: str = "", directory: str =
 
         base, ext = os.path.splitext(path)
 
-        if ext in [".rpy", ".rpyc", ".rpyb", ".rpymc"]:
-            alternative_extensions = [".rpy", ".rpyc"]
+        if ext in [".rpy", ".rpyc", ".rpyb", ".rpym", ".rpymc"]:
+            alternative_extensions = [".rpy", ".rpyc", ".rpyb", ".rpym", ".rpymc"]
         elif ext in [".py", ".pyc", ".pyo", ".pyi"]:
             alternative_extensions = [".py", ".pyc", ".pyo", ".pyi"]
         elif ext == '' and base[-1] in ['*', '?']:
-            alternative_extensions = [".rpy", ".rpyc"] + [".py", ".pyc", ".pyo", ".pyi"]
+            alternative_extensions = [".rpy", ".rpyc", ".rpyb", ".rpym", ".rpymc"] + [".py", ".pyc", ".pyo", ".pyi"]
         else:
             alternative_extensions = [ext]
 
@@ -74,7 +74,7 @@ def exclude_files(filelist, excluded_extension, run_git=True, project_directory=
     print(f"Excluded {len(fns)} files")
 
 
-def restore_files(filelist, excluded_extension, run_git=True, project_directory="."):
+def restore_files(filelist, excluded_extension, run_git=True, project_directory=".", force_no_skip_worktree=False):
     paths: list[str]
 
     with open(filelist, "r", encoding="UTF-8") as f:
@@ -95,10 +95,28 @@ def restore_files(filelist, excluded_extension, run_git=True, project_directory=
     if len(fns) > 0 and run_git:
         # subprocess.run(["git", "update-index", "--no-skip-worktree"] + original_fns)
 
-        for fn in original_fns:
-            subprocess.run(["git", "update-index", "--no-skip-worktree", fn],
-                           stdout=subprocess.DEVNULL,
-                           stderr=subprocess.DEVNULL)
+        if force_no_skip_worktree:
+            all_script_fns = []
+            all_script_fns += glob.glob("**/*.rpy")
+            all_script_fns += glob.glob("**/*.rpyc")
+            all_script_fns += glob.glob("**/*.rpyb")
+            all_script_fns += glob.glob("**/*.rpym")
+            all_script_fns += glob.glob("**/*.rpymc")
+
+            all_script_fns += glob.glob("**/*.py")
+            all_script_fns += glob.glob("**/*.pyc")
+            all_script_fns += glob.glob("**/*.pyo")
+            all_script_fns += glob.glob("**/*.pyi")
+
+            for fn in all_script_fns:
+                subprocess.run(["git", "update-index", "--no-skip-worktree", fn],
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL)
+        else:
+            for fn in original_fns:
+                subprocess.run(["git", "update-index", "--no-skip-worktree", fn],
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL)
 
     os.chdir(prev_cwd)
 
@@ -118,7 +136,7 @@ game/scripts/dir/*.rpy
 game/scripts/heavy_script.rpy
 -----------------
 
-Specifying .rpy will automatically handle .rpyc, .rpyb, .rpymc
+Specifying .rpy will automatically handle .rpyc, .rpyb, .rpym, .rpymc
 Specifying .py will automatically handle .pyc, .pyo, .pyi
 
 If a wildcard is used at the end (eg. game/tl/*) then both Ren'Py and Python filetypes are handled.
@@ -140,8 +158,12 @@ If a wildcard is used at the end (eg. game/tl/*) then both Ren'Py and Python fil
     parser.add_argument("--projectdir", "-d", metavar="dir", type=str, default=".",
         help="The directory of the game project. Git commands are run here, and script paths are relative to this directory.")
 
-    parser.add_argument("--no-git", "-ng", action="store_true",
+    group2 = parser.add_mutually_exclusive_group(required=False)
+    group2.add_argument("--no-git", "-ng", action="store_true",
         help="If given, `git update-index --[no]-skip-worktree` will not be run")
+
+    group2.add_argument("--force-no-skip-worktree", action="store_true",
+        help="If given, forces `git update-index --no-skip-worktree` to run on all scripts in the game directory, not just the ones in the filelist.")
 
 
     ## Automatically show the help message if no arguments are given
@@ -153,7 +175,7 @@ If a wildcard is used at the end (eg. game/tl/*) then both Ren'Py and Python fil
     if args.exclude:
         exclude_files(args.exclude, args.extension, not args.no_git, args.projectdir)
     else:
-        restore_files(args.restore, args.extension, not args.no_git, args.projectdir)
+        restore_files(args.restore, args.extension, not args.no_git, args.projectdir, args.force_no_skip_worktree)
 
 
 if __name__ == "__main__":

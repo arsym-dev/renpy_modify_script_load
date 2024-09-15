@@ -49,6 +49,10 @@ The directory of the game project. Git commands are run here, and script paths a
 
 If given, `git update-index --[no]-skip-worktree` will not be run
 
+> --force-no-skip-worktree
+
+If given and restoring, forces `git update-index --no-skip-worktree` to run on all scripts in the game directory, not just the ones in the filelist.
+
 ## Filelists
 
 To specify which scripts to exclude, make use of [glob](https://docs.python.org/3/library/glob.html) strings. The `**` wildcard works recursively.
