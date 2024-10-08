@@ -108,10 +108,13 @@ def restore_files(filelist, excluded_extension, run_git=True, project_directory=
             all_script_fns += glob.glob("**/*.pyo", recursive=True)
             all_script_fns += glob.glob("**/*.pyi", recursive=True)
 
+            print(f"--no-skip-worktree on {len(all_script_fns)} files")
+
             for fn in all_script_fns:
                 subprocess.run(["git", "update-index", "--no-skip-worktree", fn],
                             stdout=subprocess.DEVNULL,
                             stderr=subprocess.DEVNULL)
+
         elif len(original_fns) > 0:
             for fn in original_fns:
                 subprocess.run(["git", "update-index", "--no-skip-worktree", fn],
