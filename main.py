@@ -92,27 +92,27 @@ def restore_files(filelist, excluded_extension, run_git=True, project_directory=
 
     print(f"Found {len(fns)} files")
 
-    if len(fns) > 0 and run_git:
+    if run_git:
         # subprocess.run(["git", "update-index", "--no-skip-worktree"] + original_fns)
 
         if force_no_skip_worktree:
             all_script_fns = []
-            all_script_fns += glob.glob("**/*.rpy")
-            all_script_fns += glob.glob("**/*.rpyc")
-            all_script_fns += glob.glob("**/*.rpyb")
-            all_script_fns += glob.glob("**/*.rpym")
-            all_script_fns += glob.glob("**/*.rpymc")
+            all_script_fns += glob.glob("**/*.rpy", recursive=True)
+            all_script_fns += glob.glob("**/*.rpyc", recursive=True)
+            all_script_fns += glob.glob("**/*.rpyb", recursive=True)
+            all_script_fns += glob.glob("**/*.rpym", recursive=True)
+            all_script_fns += glob.glob("**/*.rpymc", recursive=True)
 
-            all_script_fns += glob.glob("**/*.py")
-            all_script_fns += glob.glob("**/*.pyc")
-            all_script_fns += glob.glob("**/*.pyo")
-            all_script_fns += glob.glob("**/*.pyi")
+            all_script_fns += glob.glob("**/*.py", recursive=True)
+            all_script_fns += glob.glob("**/*.pyc", recursive=True)
+            all_script_fns += glob.glob("**/*.pyo", recursive=True)
+            all_script_fns += glob.glob("**/*.pyi", recursive=True)
 
             for fn in all_script_fns:
                 subprocess.run(["git", "update-index", "--no-skip-worktree", fn],
                             stdout=subprocess.DEVNULL,
                             stderr=subprocess.DEVNULL)
-        else:
+        elif len(original_fns) > 0:
             for fn in original_fns:
                 subprocess.run(["git", "update-index", "--no-skip-worktree", fn],
                             stdout=subprocess.DEVNULL,
